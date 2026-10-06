@@ -126,7 +126,7 @@ tr.totr td{font-weight:800;border-bottom:0;color:var(--acc)}
 <div id="sheet"></div><div id="toast"></div>
 <input type="file" id="impIn" accept=".json,application/json" hidden>
 <script>
-const APP_VER='2';
+const APP_VER='3';
 const MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 const $=s=>document.querySelector(s);
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
@@ -385,7 +385,9 @@ function closeSheet(){const el=$('#sheet');el.classList.remove('on');el.innerHTM
   try{cur=localStorage.getItem('tk_cur')}catch(e){}if(!item(cur))cur=(D.items[0]||{}).id;
   newForm();render();
   if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
-  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+  if('serviceWorker' in navigator){const had=!!navigator.serviceWorker.controller;let rl=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!rl){rl=true;location.reload()}});
+    navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{r.update();document.addEventListener('visibilitychange',()=>{if(!document.hidden)r.update()})}).catch(()=>{})}
 })();
 </script>
 </body>
